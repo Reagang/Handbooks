@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+    <IsRoslynComponent>false</IsRoslynComponent>
+    <!-- CS0618: XUnitVerifier is marked obsolete by the Roslyn SDK testing package
+         itself with no non-preview replacement published; it remains the standard
+         verifier used across dotnet/roslyn-analyzers. -->
+    <NoWarn>$(NoWarn);CS1591;CS0618</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Pinned explicitly: gcode.csproj marks its own Microsoft.CodeAnalysis.CSharp
+         reference PrivateAssets="all" (required for a Roslyn analyzer NuGet package),
+         so it does not flow here transitively. Without this, NuGet falls back to the
+         old floor version pulled in by the testing package and the build fails with
+         CS1705. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.XUnit" Version="1.1.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\gcode\gcode.csproj" />
+  </ItemGroup>
+
+</Project>

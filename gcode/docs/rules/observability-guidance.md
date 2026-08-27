@@ -2,13 +2,13 @@
 
 None of this pack's rules are implemented as analyzers: the pack's own catalog marks every one of them `governance` or `heuristic` - telemetry coverage, resiliency visibility, and sensitive-data judgment calls aren't things syntax alone can verify without a high false-positive rate. `OBS1004` (silent failure paths) is the exception worth calling out: its concrete case, an empty `catch` block, already ships as GCODE0001.
 
-Machine-readable source: [`catalog/observability.json`](../../catalog/observability.json).
+Machine-readable source: [`catalog/observability.json`](../../catalog/observability.json). For the full deduplicated list across all packs, see [`ALL_RULES.md`](ALL_RULES.md).
 
 ---
 
 ### OBS1001: Require telemetry and structured logging
 
-**Domain:** observability &nbsp;·&nbsp; **Category:** telemetry &nbsp;·&nbsp; **Severity:** critical &nbsp;·&nbsp; **Type:** governance
+**Domain:** observability &nbsp;·&nbsp; **Category:** telemetry &nbsp;·&nbsp; **Severity:** warning &nbsp;·&nbsp; **Type:** governance
 
 **Problem:** Systems without telemetry and structured logging are difficult to operate and troubleshoot.
 
@@ -73,7 +73,7 @@ Machine-readable source: [`catalog/observability.json`](../../catalog/observabil
 
 ### OBS1003: Prevent sensitive data leakage in telemetry
 
-**Domain:** observability &nbsp;·&nbsp; **Category:** security &nbsp;·&nbsp; **Severity:** critical &nbsp;·&nbsp; **Type:** governance
+**Domain:** observability &nbsp;·&nbsp; **Category:** security &nbsp;·&nbsp; **Severity:** warning &nbsp;·&nbsp; **Type:** governance
 
 **Problem:** Sensitive data in logs and telemetry creates security and compliance risks.
 
@@ -117,30 +117,8 @@ Machine-readable source: [`catalog/observability.json`](../../catalog/observabil
 
 **Domain:** observability &nbsp;·&nbsp; **Category:** dependency-injection &nbsp;·&nbsp; **Severity:** info &nbsp;·&nbsp; **Type:** heuristic
 
-**Problem:** Improper dependency injection boundaries can reduce visibility into runtime behavior.
+**Covered by [`DI1001`](dependency-injection-guidance.md#di1001-prevent-misuse-of-dependency-injection)** - same check, documented there.
 
-**Why it matters:**
-- Hidden runtime resolution paths
-- Difficult service tracing
-- Reduced operational transparency
-
-**Indicators to look for:**
-- Service locator patterns
-- Runtime dependency resolution
-- Untracked transient services
-
-**Fix:**
-- Use constructor injection
-- Track service lifetimes
-- Centralize registration patterns
-
-**AI review prompt:**
-- Review DI boundaries for observability gaps.
-- Ensure service interactions are traceable.
-
-**Example:**
-
-- Bad: `serviceProvider.GetService<IMyService>()`
-- Good: `Inject IMyService directly`
+> Improper dependency injection boundaries can reduce visibility into runtime behavior.
 
 ---

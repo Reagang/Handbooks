@@ -8,7 +8,7 @@
     "title": "Require telemetry and structured logging",
     "domain": "observability",
     "category": "telemetry",
-    "severity": "critical",
+    "severity": "warning",
     "type": "governance",
     "problem": "Systems without telemetry and structured logging are difficult to operate and troubleshoot.",
     "why": [
@@ -107,7 +107,7 @@
     "title": "Prevent sensitive data leakage in telemetry",
     "domain": "observability",
     "category": "security",
-    "severity": "critical",
+    "severity": "warning",
     "type": "governance",
     "problem": "Sensitive data in logs and telemetry creates security and compliance risks.",
     "why": [
@@ -243,6 +243,7 @@
       "diagnostics"
     ],
     "owner": "platform-engineering",
-    "status": "guidance"
+    "status": "covered-by",
+    "coveredBy": "DI1001"
   }
 ]

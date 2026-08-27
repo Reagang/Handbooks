@@ -56,7 +56,7 @@
     "title": "Validate options during startup",
     "domain": "dependency-injection",
     "category": "runtime-governance",
-    "severity": "critical",
+    "severity": "warning",
     "type": "governance",
     "problem": "Invalid configuration should fail during startup instead of runtime.",
     "fix": [
@@ -76,7 +76,7 @@
     "title": "Validate dependency injection scopes and registrations",
     "domain": "dependency-injection",
     "category": "runtime-governance",
-    "severity": "critical",
+    "severity": "warning",
     "type": "governance",
     "problem": "Incorrect scopes and missing registrations create runtime instability.",
     "fix": [
@@ -90,7 +90,8 @@
       "startup"
     ],
     "owner": "platform-engineering",
-    "status": "guidance"
+    "status": "covered-by",
+    "coveredBy": "DI1005"
   },
   {
     "id": "ORG1005",
@@ -301,7 +302,7 @@
     "title": "Add XML documentation where appropriate",
     "domain": "maintainability",
     "category": "documentation",
-    "severity": "info",
+    "severity": "warning",
     "type": "governance",
     "problem": "Lack of documentation reduces maintainability and onboarding efficiency.",
     "fix": [
@@ -380,7 +381,7 @@
     "title": "Use named or typed HttpClients",
     "domain": "distributed-systems",
     "category": "http",
-    "severity": "critical",
+    "severity": "warning",
     "type": "governance",
     "problem": "Direct HttpClient usage reduces resiliency and observability.",
     "fix": [
@@ -400,7 +401,7 @@
     "title": "Retries must implement backoff strategy",
     "domain": "resiliency",
     "category": "distributed-systems",
-    "severity": "critical",
+    "severity": "warning",
     "type": "governance",
     "problem": "Retries without backoff can amplify outages and overload dependencies.",
     "fix": [

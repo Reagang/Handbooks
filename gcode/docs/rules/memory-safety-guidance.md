@@ -2,7 +2,7 @@
 
 Rules from the memory-safety pack that aren't implemented as a Roslyn analyzer here - reliably detecting "unbounded" or "long-lived" requires knowing the type's intended usage, which syntax alone can't tell.
 
-Machine-readable source: [`catalog/memory-safety.json`](../../catalog/memory-safety.json).
+Machine-readable source: [`catalog/memory-safety.json`](../../catalog/memory-safety.json). For the full deduplicated list across all packs, see [`ALL_RULES.md`](ALL_RULES.md).
 
 ---
 

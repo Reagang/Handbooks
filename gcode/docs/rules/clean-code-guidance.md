@@ -2,7 +2,7 @@
 
 Rules from the clean-code pack that aren't implemented as a Roslyn analyzer here - they need judgment calls (`heuristic`) that a syntax check can't reliably make.
 
-Machine-readable source: [`catalog/clean-code.json`](../../catalog/clean-code.json).
+Machine-readable source: [`catalog/clean-code.json`](../../catalog/clean-code.json). For the full deduplicated list across all packs, see [`ALL_RULES.md`](ALL_RULES.md).
 
 ---
 

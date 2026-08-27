@@ -2,7 +2,7 @@
 
 This pack restates the org-wide engineering philosophy; several entries just point back at a rule with fuller detail in a domain-specific pack (`clean-code`, `dependency-injection`, etc.) rather than needing a second, duplicate analyzer. The rest are architecture/process guidance no syntax check can safely automate.
 
-Machine-readable source: [`catalog/organization.json`](../../catalog/organization.json).
+Machine-readable source: [`catalog/organization.json`](../../catalog/organization.json). For the full deduplicated list across all packs, see [`ALL_RULES.md`](ALL_RULES.md).
 
 ---
 
@@ -35,7 +35,7 @@ Machine-readable source: [`catalog/organization.json`](../../catalog/organizatio
 
 ### ORG1003: Validate options during startup
 
-**Domain:** dependency-injection &nbsp;·&nbsp; **Category:** runtime-governance &nbsp;·&nbsp; **Severity:** critical &nbsp;·&nbsp; **Type:** governance
+**Domain:** dependency-injection &nbsp;·&nbsp; **Category:** runtime-governance &nbsp;·&nbsp; **Severity:** warning &nbsp;·&nbsp; **Type:** governance
 
 **Problem:** Invalid configuration should fail during startup instead of runtime.
 
@@ -47,14 +47,11 @@ Machine-readable source: [`catalog/organization.json`](../../catalog/organizatio
 
 ### ORG1004: Validate dependency injection scopes and registrations
 
-**Domain:** dependency-injection &nbsp;·&nbsp; **Category:** runtime-governance &nbsp;·&nbsp; **Severity:** critical &nbsp;·&nbsp; **Type:** governance
+**Domain:** dependency-injection &nbsp;·&nbsp; **Category:** runtime-governance &nbsp;·&nbsp; **Severity:** warning &nbsp;·&nbsp; **Type:** governance
 
-**Problem:** Incorrect scopes and missing registrations create runtime instability.
+**Covered by [`DI1005`](dependency-injection-guidance.md#di1005-validate-dependency-injection-registrations-on-startup)** - same check, documented there.
 
-**Fix:**
-- Enable ValidateScopes
-- Enable ValidateOnBuild
-- Review service lifetimes
+> Incorrect scopes and missing registrations create runtime instability.
 
 ---
 
@@ -179,7 +176,7 @@ Machine-readable source: [`catalog/organization.json`](../../catalog/organizatio
 
 ### ORG1015: Add XML documentation where appropriate
 
-**Domain:** maintainability &nbsp;·&nbsp; **Category:** documentation &nbsp;·&nbsp; **Severity:** info &nbsp;·&nbsp; **Type:** governance
+**Domain:** maintainability &nbsp;·&nbsp; **Category:** documentation &nbsp;·&nbsp; **Severity:** warning &nbsp;·&nbsp; **Type:** governance
 
 **Problem:** Lack of documentation reduces maintainability and onboarding efficiency.
 
@@ -223,7 +220,7 @@ Machine-readable source: [`catalog/organization.json`](../../catalog/organizatio
 
 ### ORG1019: Use named or typed HttpClients
 
-**Domain:** distributed-systems &nbsp;·&nbsp; **Category:** http &nbsp;·&nbsp; **Severity:** critical &nbsp;·&nbsp; **Type:** governance
+**Domain:** distributed-systems &nbsp;·&nbsp; **Category:** http &nbsp;·&nbsp; **Severity:** warning &nbsp;·&nbsp; **Type:** governance
 
 **Problem:** Direct HttpClient usage reduces resiliency and observability.
 
@@ -235,7 +232,7 @@ Machine-readable source: [`catalog/organization.json`](../../catalog/organizatio
 
 ### ORG1020: Retries must implement backoff strategy
 
-**Domain:** resiliency &nbsp;·&nbsp; **Category:** distributed-systems &nbsp;·&nbsp; **Severity:** critical &nbsp;·&nbsp; **Type:** governance
+**Domain:** resiliency &nbsp;·&nbsp; **Category:** distributed-systems &nbsp;·&nbsp; **Severity:** warning &nbsp;·&nbsp; **Type:** governance
 
 **Problem:** Retries without backoff can amplify outages and overload dependencies.
 

@@ -2,7 +2,7 @@
 
 Rules from the dependency-injection pack that aren't implemented as a Roslyn analyzer here - detecting them reliably needs contextual reasoning about intent, not just syntax.
 
-Machine-readable source: [`catalog/dependency-injection.json`](../../catalog/dependency-injection.json).
+Machine-readable source: [`catalog/dependency-injection.json`](../../catalog/dependency-injection.json). For the full deduplicated list across all packs, see [`ALL_RULES.md`](ALL_RULES.md).
 
 ---
 

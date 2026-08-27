@@ -18,10 +18,11 @@ gcode/
 │   ├── AnalyzerReleases.Shipped.md
 │   └── AnalyzerReleases.Unshipped.md
 ├── tests/gcode.Tests/           xUnit tests using Microsoft.CodeAnalysis.Testing
-└── docs/rules/                  one page per implemented rule ID, plus one
+└── docs/rules/                  one page per implemented rule ID, one
                                   consolidated `<pack>-guidance.md` per pack
                                   for the rules that aren't implemented as
-                                  analyzers
+                                  analyzers, and ALL_RULES.md - the full
+                                  deduplicated list across every pack
 ```
 
 ## Rules
@@ -40,8 +41,11 @@ gcode/
 
 Every other rule considered so far (controller bloat, telemetry coverage,
 DI startup validation, god classes, ...) is documented but not statically
-enforced - see `catalog/README.md` for why, and
-`docs/rules/<pack>-guidance.md` for the full list per pack.
+enforced. **[`docs/rules/ALL_RULES.md`](docs/rules/ALL_RULES.md) is the
+complete, deduplicated list of all 36 unique rules** across every pack -
+implemented, covered by a built-in analyzer, or guidance-only - with the
+dedup and severity-normalization rules explained; `catalog/README.md`
+covers the underlying JSON schema.
 
 ## Building and testing
 
@@ -63,13 +67,17 @@ dotnet test
    `Initialize`, a syntax/symbol action; `CircularDependencyAnalyzer.cs`
    shows a compilation-wide analyzer for cross-type checks).
 4. Set `catalog/<pack>.json`'s `status` to `"analyzer"` and add
-   `"analyzerId"`.
+   `"analyzerId"`. If it duplicates a rule already covered elsewhere, set
+   `"status": "covered-by"` and `"coveredBy"` instead of adding a second
+   analyzer - check `docs/rules/ALL_RULES.md` first.
 5. Add its row to `AnalyzerReleases.Unshipped.md`.
 6. Add `docs/rules/<ID>.md` describing cause, fix, and example (the
    `helpLinkUri` on each descriptor points here), and remove/replace the
    rule's entry in the relevant `docs/rules/<pack>-guidance.md`.
 7. Add tests under `tests/gcode.Tests/` covering both the flagged and the
    allowed cases.
+8. Regenerate `catalog/all-rules.json` and `docs/rules/ALL_RULES.md` from
+   the updated `catalog/*.json` files so the combined list stays in sync.
 
 When a version of the package ships, move its rows from
 `AnalyzerReleases.Unshipped.md` into `AnalyzerReleases.Shipped.md` under a

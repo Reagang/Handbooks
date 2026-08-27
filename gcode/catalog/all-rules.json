@@ -1,0 +1,1313 @@
+[
+  {
+    "id": "CC1001",
+    "legacyIds": [
+      "CLOUD2027",
+      "CLOUD2041",
+      "CLOUD2077"
+    ],
+    "title": "Avoid inefficient LINQ",
+    "domain": "clean-code",
+    "category": "performance",
+    "severity": "error",
+    "type": "deterministic",
+    "problem": "Inefficient LINQ usage can create unnecessary allocations and reduce application performance.",
+    "why": [
+      "Can allocate unnecessary collections",
+      "Can cause multiple enumerations",
+      "May execute expensive queries repeatedly",
+      "Can degrade hot-path performance"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Multiple ToList() calls",
+      "Repeated enumeration of IEnumerable",
+      "Nested LINQ queries in loops",
+      "Unnecessary Select followed by ToList"
+    ],
+    "fix": [
+      "Cache enumerations where appropriate",
+      "Use dictionaries/lookups for repeated access",
+      "Avoid unnecessary materialization",
+      "Refactor nested LINQ in loops"
+    ],
+    "aiReviewPrompt": [
+      "Review LINQ usage for repeated enumeration.",
+      "Check for unnecessary allocations.",
+      "Review hot paths for LINQ performance issues."
+    ],
+    "examples": {
+      "bad": "orders.Where(x => x.Active).ToList().FirstOrDefault();",
+      "good": "orders.FirstOrDefault(x => x.Active);"
+    },
+    "tags": [
+      "linq",
+      "performance",
+      "allocations",
+      "maintainability"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "CC1001",
+    "pack": "clean-code",
+    "aliases": []
+  },
+  {
+    "id": "CC1003",
+    "legacyIds": [
+      "CLOUD2087"
+    ],
+    "title": "Avoid magic constants",
+    "domain": "clean-code",
+    "category": "maintainability",
+    "severity": "error",
+    "type": "deterministic",
+    "problem": "Magic constants reduce readability and increase maintenance complexity.",
+    "why": [
+      "Intent becomes unclear",
+      "Values become duplicated",
+      "Changes become risky and error-prone"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Hardcoded numeric values",
+      "Hardcoded status strings",
+      "Repeated inline constants"
+    ],
+    "fix": [
+      "Use named constants",
+      "Use enums where appropriate",
+      "Use configuration or strongly typed options"
+    ],
+    "aiReviewPrompt": [
+      "Review for repeated hardcoded values.",
+      "Ensure business constants are centralized."
+    ],
+    "examples": {
+      "bad": "if (status == 5)",
+      "good": "if (status == OrderStatus.Completed)"
+    },
+    "tags": [
+      "constants",
+      "readability",
+      "maintainability"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "CC1003",
+    "pack": "clean-code",
+    "aliases": [
+      "ORG1007"
+    ]
+  },
+  {
+    "id": "CC1004",
+    "legacyIds": [
+      "CLOUD2157"
+    ],
+    "title": "Avoid blocking async code",
+    "domain": "clean-code",
+    "category": "async",
+    "severity": "error",
+    "type": "deterministic",
+    "problem": "Blocking async code can deadlock threads and reduce application scalability.",
+    "why": [
+      "Blocks thread pool threads",
+      "Can cause deadlocks",
+      "Reduces throughput under load"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      ".Result usage",
+      ".Wait() usage",
+      "Thread.Sleep inside async flow"
+    ],
+    "fix": [
+      "Use async/await end-to-end",
+      "Propagate async upward",
+      "Use Task.Delay instead of Thread.Sleep"
+    ],
+    "aiReviewPrompt": [
+      "Review for sync-over-async violations.",
+      "Ensure async flows remain non-blocking."
+    ],
+    "examples": {
+      "bad": "var result = client.GetAsync(url).Result;",
+      "good": "var result = await client.GetAsync(url);"
+    },
+    "tags": [
+      "async",
+      "performance",
+      "reliability"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "CC1004",
+    "pack": "clean-code",
+    "aliases": [
+      "ORG1002"
+    ]
+  },
+  {
+    "id": "DI1002",
+    "legacyIds": [
+      "CLOUD2060",
+      "CLOUD2213"
+    ],
+    "title": "Avoid duplicate service registrations",
+    "domain": "dependency-injection",
+    "category": "registration",
+    "severity": "warning",
+    "type": "deterministic",
+    "problem": "Duplicate service registrations create ambiguous behavior and increase maintenance complexity.",
+    "why": [
+      "Can override intended implementations",
+      "Makes debugging difficult",
+      "Increases container complexity"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Multiple registrations for same abstraction",
+      "Repeated AddSingleton/AddScoped calls"
+    ],
+    "fix": [
+      "Centralize registrations",
+      "Use TryAdd methods where appropriate",
+      "Validate container configuration"
+    ],
+    "aiReviewPrompt": [
+      "Review registration patterns.",
+      "Ensure duplicate registrations are avoided."
+    ],
+    "examples": {
+      "bad": "services.AddSingleton<IMyService, MyService>(); twice",
+      "good": "Single centralized registration"
+    },
+    "tags": [
+      "dependency-injection",
+      "container",
+      "startup"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "DI1002",
+    "pack": "dependency-injection",
+    "aliases": []
+  },
+  {
+    "id": "DI1003",
+    "legacyIds": [
+      "CLOUD2179",
+      "CLOUD2086"
+    ],
+    "title": "Prevent circular dependencies",
+    "domain": "dependency-injection",
+    "category": "architecture",
+    "severity": "critical",
+    "type": "deterministic",
+    "problem": "Circular dependencies create unstable architectures and runtime resolution failures.",
+    "why": [
+      "Can break application startup",
+      "Creates tight coupling",
+      "Violates separation of concerns"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Mutual service references",
+      "Indirect dependency cycles",
+      "Recursive constructor graphs"
+    ],
+    "fix": [
+      "Refactor service boundaries",
+      "Introduce interfaces or mediator patterns",
+      "Split orchestration responsibilities"
+    ],
+    "aiReviewPrompt": [
+      "Review service boundaries for dependency cycles.",
+      "Ensure architecture remains loosely coupled."
+    ],
+    "examples": {
+      "bad": "ServiceA -> ServiceB -> ServiceA",
+      "good": "Mediator/event-driven decoupling"
+    },
+    "tags": [
+      "dependency-injection",
+      "architecture",
+      "coupling"
+    ],
+    "owner": "architecture-team",
+    "status": "analyzer",
+    "analyzerId": "DI1003",
+    "pack": "dependency-injection",
+    "aliases": []
+  },
+  {
+    "id": "GCODE0001",
+    "pack": "gcode",
+    "title": "Empty catch block",
+    "domain": "reliability",
+    "category": "exception-handling",
+    "severity": "warning",
+    "type": "deterministic",
+    "problem": "Catching an exception and doing nothing with it hides failures.",
+    "why": [
+      "Swallowed exceptions are invisible in production",
+      "Makes incident investigation difficult",
+      "Reduces operational confidence"
+    ],
+    "fix": [
+      "Handle the exception",
+      "Log it",
+      "Narrow the catch to the specific type you intend to ignore, with a comment explaining why"
+    ],
+    "examples": {
+      "bad": "catch (Exception) { }",
+      "good": "catch (Exception ex) { logger.LogError(ex, \"Processing failed\"); }"
+    },
+    "tags": [
+      "exceptions",
+      "reliability",
+      "observability"
+    ],
+    "owner": "gcode",
+    "status": "analyzer",
+    "analyzerId": "GCODE0001",
+    "aliases": [
+      "OBS1004"
+    ]
+  },
+  {
+    "id": "MEM1001",
+    "legacyIds": [
+      "CLOUD14000"
+    ],
+    "title": "Detach event handlers to prevent memory leaks",
+    "domain": "memory-safety",
+    "category": "memory-management",
+    "severity": "critical",
+    "type": "deterministic",
+    "problem": "Undetached event handlers can keep objects alive and create memory leaks.",
+    "why": [
+      "Prevents garbage collection",
+      "Creates hidden object retention",
+      "Can increase memory pressure over time"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Event subscriptions without unsubscription",
+      "Long-lived publishers with short-lived subscribers"
+    ],
+    "fix": [
+      "Unsubscribe event handlers",
+      "Use weak event patterns where appropriate",
+      "Dispose subscriptions correctly"
+    ],
+    "aiReviewPrompt": [
+      "Review event subscription lifetimes.",
+      "Ensure handlers are detached appropriately."
+    ],
+    "examples": {
+      "bad": "publisher.Event += Handler;",
+      "good": "publisher.Event -= Handler during disposal"
+    },
+    "tags": [
+      "memory",
+      "events",
+      "gc",
+      "lifecycle"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "MEM1001",
+    "pack": "memory-safety",
+    "aliases": []
+  },
+  {
+    "id": "MEM1003",
+    "legacyIds": [
+      "CLOUD14008"
+    ],
+    "title": "Require GC.SuppressFinalize when implementing finalizers",
+    "domain": "memory-safety",
+    "category": "resource-management",
+    "severity": "warning",
+    "type": "deterministic",
+    "problem": "Missing GC.SuppressFinalize can increase finalization overhead and delay resource cleanup.",
+    "why": [
+      "Finalizers are expensive",
+      "Objects survive longer in memory",
+      "Increases GC pressure"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "IDisposable implementation without GC.SuppressFinalize",
+      "Finalizer present without suppression"
+    ],
+    "fix": [
+      "Call GC.SuppressFinalize(this)",
+      "Implement IDisposable correctly",
+      "Avoid finalizers where unnecessary"
+    ],
+    "aiReviewPrompt": [
+      "Review disposal patterns.",
+      "Ensure finalizers are implemented correctly."
+    ],
+    "examples": {
+      "bad": "Dispose() without GC.SuppressFinalize(this)",
+      "good": "GC.SuppressFinalize(this);"
+    },
+    "tags": [
+      "memory",
+      "idisposable",
+      "gc",
+      "finalizers"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "MEM1003",
+    "pack": "memory-safety",
+    "aliases": []
+  },
+  {
+    "id": "ORG1016",
+    "title": "Use StringBuilder for repeated concatenation",
+    "domain": "performance",
+    "category": "allocations",
+    "severity": "info",
+    "type": "deterministic",
+    "problem": "Repeated string concatenation creates unnecessary allocations.",
+    "fix": [
+      "Use StringBuilder in loops or repeated concatenation"
+    ],
+    "tags": [
+      "performance",
+      "allocations",
+      "strings"
+    ],
+    "owner": "performance-team",
+    "status": "analyzer",
+    "analyzerId": "ORG1016",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1009",
+    "title": "Prefer static private methods where possible",
+    "domain": "performance",
+    "category": "memory",
+    "severity": "info",
+    "type": "deterministic",
+    "problem": "Non-static methods may capture unnecessary instance state.",
+    "fix": [
+      "Mark private methods static when no instance state is used"
+    ],
+    "tags": [
+      "performance",
+      "memory",
+      "clean-code"
+    ],
+    "owner": "platform-engineering",
+    "status": "covered-by-builtin",
+    "coveredBy": "CA1822",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "CC1002",
+    "legacyIds": [
+      "CLOUD2044"
+    ],
+    "title": "Prevent controller bloat",
+    "domain": "clean-code",
+    "category": "architecture",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Controllers containing orchestration and business logic become difficult to maintain and test.",
+    "why": [
+      "Violates separation of concerns",
+      "Creates tightly coupled endpoints",
+      "Reduces readability and testability"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Controller exceeds 300 lines",
+      "Controller injects more than 5 services",
+      "Contains business rules and orchestration logic"
+    ],
+    "fix": [
+      "Move orchestration into application services",
+      "Use CQRS handlers",
+      "Extract validation and mapping logic"
+    ],
+    "aiReviewPrompt": [
+      "Review controller responsibilities.",
+      "Ensure controllers remain thin orchestration boundaries."
+    ],
+    "examples": {
+      "bad": "Controller handles validation, persistence, retries, and mapping.",
+      "good": "Controller delegates work to application services or handlers."
+    },
+    "tags": [
+      "controllers",
+      "architecture",
+      "clean-architecture",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance",
+    "pack": "clean-code",
+    "aliases": []
+  },
+  {
+    "id": "DI1001",
+    "legacyIds": [
+      "CLOUD2036",
+      "CLOUD2002"
+    ],
+    "title": "Prevent misuse of dependency injection",
+    "domain": "dependency-injection",
+    "category": "architecture",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "Improper dependency injection usage creates tightly coupled and difficult-to-maintain systems.",
+    "why": [
+      "Creates hidden runtime dependencies",
+      "Makes testing more difficult",
+      "Introduces service resolution ambiguity",
+      "Can create circular dependency chains"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Injecting IServiceProvider",
+      "Service locator usage",
+      "Runtime dependency resolution"
+    ],
+    "fix": [
+      "Use constructor injection",
+      "Avoid service locator patterns",
+      "Make dependencies explicit"
+    ],
+    "aiReviewPrompt": [
+      "Review dependency boundaries.",
+      "Ensure dependencies are explicit and testable."
+    ],
+    "examples": {
+      "bad": "serviceProvider.GetService<IMyService>()",
+      "good": "Inject IMyService through constructor injection"
+    },
+    "tags": [
+      "dependency-injection",
+      "architecture",
+      "maintainability",
+      "testability"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "dependency-injection",
+    "aliases": [
+      "OBS1005"
+    ]
+  },
+  {
+    "id": "DI1004",
+    "legacyIds": [
+      "CLOUD2116",
+      "CLOUD2199"
+    ],
+    "title": "Prevent excessive constructor dependencies",
+    "domain": "dependency-injection",
+    "category": "maintainability",
+    "severity": "info",
+    "type": "heuristic",
+    "problem": "Too many constructor dependencies often indicate orchestration leakage or god classes.",
+    "why": [
+      "Violates SRP",
+      "Increases object graph complexity",
+      "Makes testing difficult"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "More than 5 constructor parameters",
+      "Large orchestration services"
+    ],
+    "fix": [
+      "Split responsibilities",
+      "Extract orchestration layers",
+      "Reduce coupling"
+    ],
+    "aiReviewPrompt": [
+      "Review service cohesion.",
+      "Check for orchestration leakage."
+    ],
+    "examples": {
+      "bad": "Service with 10 injected dependencies",
+      "good": "Focused cohesive service"
+    },
+    "tags": [
+      "dependency-injection",
+      "architecture",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance",
+    "pack": "dependency-injection",
+    "aliases": []
+  },
+  {
+    "id": "DI1005",
+    "legacyIds": [
+      "CLOUD2103"
+    ],
+    "title": "Validate dependency injection registrations on startup",
+    "domain": "dependency-injection",
+    "category": "runtime-governance",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Invalid service registrations may only fail at runtime without startup validation.",
+    "why": [
+      "Runtime failures are difficult to diagnose",
+      "Missing registrations may remain hidden",
+      "Invalid scopes can cause memory leaks"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "No service provider validation",
+      "Missing ValidateScopes",
+      "Missing ValidateOnBuild"
+    ],
+    "fix": [
+      "Enable service provider validation",
+      "Validate scopes during startup",
+      "Fail fast on invalid registrations"
+    ],
+    "aiReviewPrompt": [
+      "Review DI startup validation.",
+      "Ensure invalid scopes are detected early."
+    ],
+    "examples": {
+      "bad": "Builder without service validation",
+      "good": "ValidateScopes and ValidateOnBuild enabled"
+    },
+    "tags": [
+      "dependency-injection",
+      "startup",
+      "runtime",
+      "governance"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "dependency-injection",
+    "aliases": [
+      "ORG1004"
+    ]
+  },
+  {
+    "id": "MEM1002",
+    "legacyIds": [
+      "CLOUD14005"
+    ],
+    "title": "Avoid async closures without cancellation",
+    "domain": "memory-safety",
+    "category": "async",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Async closures without cancellation handling can retain references and create lifecycle issues.",
+    "why": [
+      "Captures object references",
+      "Can outlive intended scope",
+      "Increases memory retention risk"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Task.Delay without cancellation token",
+      "Long-running background tasks",
+      "Captured references inside async lambdas"
+    ],
+    "fix": [
+      "Use CancellationToken",
+      "Avoid unnecessary captures",
+      "Dispose long-running operations"
+    ],
+    "aiReviewPrompt": [
+      "Review async closure lifetimes.",
+      "Ensure background operations support cancellation."
+    ],
+    "examples": {
+      "bad": "await Task.Delay(TimeSpan.FromMinutes(5));",
+      "good": "await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);"
+    },
+    "tags": [
+      "async",
+      "memory",
+      "lifecycle",
+      "cancellation"
+    ],
+    "owner": "performance-team",
+    "status": "guidance",
+    "pack": "memory-safety",
+    "aliases": []
+  },
+  {
+    "id": "MEM1004",
+    "legacyIds": [
+      "CLOUD14011"
+    ],
+    "title": "Avoid long-lived timers without disposal",
+    "domain": "memory-safety",
+    "category": "resource-management",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "Undisposed timers can retain references and continue executing indefinitely.",
+    "why": [
+      "Creates hidden background execution",
+      "Retains captured references",
+      "Causes memory and CPU leaks"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Timer instances without disposal",
+      "Background timers without cancellation"
+    ],
+    "fix": [
+      "Dispose timers properly",
+      "Use hosted services with cancellation",
+      "Avoid unmanaged timer lifetimes"
+    ],
+    "aiReviewPrompt": [
+      "Review timer lifecycle management.",
+      "Ensure timers are disposed and cancellable."
+    ],
+    "examples": {
+      "bad": "new Timer(callback, null, 0, 1000);",
+      "good": "Dispose timer during shutdown"
+    },
+    "tags": [
+      "timers",
+      "memory",
+      "background-services",
+      "resource-management"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "memory-safety",
+    "aliases": []
+  },
+  {
+    "id": "MEM1005",
+    "legacyIds": [
+      "CLOUD14015"
+    ],
+    "title": "Avoid unbounded in-memory collections",
+    "domain": "memory-safety",
+    "category": "allocations",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "Unbounded collections can exhaust memory under load and destabilize services.",
+    "why": [
+      "Memory usage grows indefinitely",
+      "Can trigger OOM conditions",
+      "Increases GC pressure"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "ConcurrentDictionary without eviction",
+      "Unbounded queues",
+      "Large in-memory caching without limits"
+    ],
+    "fix": [
+      "Add eviction policies",
+      "Use bounded channels/queues",
+      "Implement memory limits"
+    ],
+    "aiReviewPrompt": [
+      "Review in-memory collection growth.",
+      "Ensure memory usage remains bounded."
+    ],
+    "examples": {
+      "bad": "static List<Order> Orders = new();",
+      "good": "Use bounded cache with expiration"
+    },
+    "tags": [
+      "memory",
+      "allocations",
+      "caching",
+      "scalability"
+    ],
+    "owner": "performance-team",
+    "status": "guidance",
+    "pack": "memory-safety",
+    "aliases": []
+  },
+  {
+    "id": "OBS1001",
+    "legacyIds": [
+      "CLOUD2026",
+      "CLOUD2038"
+    ],
+    "title": "Require telemetry and structured logging",
+    "domain": "observability",
+    "category": "telemetry",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Systems without telemetry and structured logging are difficult to operate and troubleshoot.",
+    "why": [
+      "Reduces production visibility",
+      "Makes incident investigation difficult",
+      "Prevents proactive monitoring",
+      "Impacts distributed tracing"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "No structured logs",
+      "Missing telemetry events",
+      "No metrics or traces"
+    ],
+    "fix": [
+      "Use structured logging",
+      "Emit metrics and traces",
+      "Add centralized telemetry collection"
+    ],
+    "aiReviewPrompt": [
+      "Review telemetry coverage across the service.",
+      "Ensure logs are structured and correlated."
+    ],
+    "examples": {
+      "bad": "Console.WriteLine('Error occurred')",
+      "good": "logger.LogError(ex, 'Failed processing order {OrderId}', orderId)"
+    },
+    "tags": [
+      "telemetry",
+      "logging",
+      "monitoring",
+      "operations"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "observability",
+    "aliases": []
+  },
+  {
+    "id": "OBS1002",
+    "legacyIds": [
+      "CLOUD2020",
+      "CLOUD2047"
+    ],
+    "title": "Require retry and resiliency telemetry",
+    "domain": "observability",
+    "category": "resiliency",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Retries and resiliency events without telemetry make distributed failures difficult to diagnose.",
+    "why": [
+      "Hidden retries increase latency",
+      "Circuit breaker failures become invisible",
+      "Operational troubleshooting becomes difficult"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Retry policies without logging",
+      "Circuit breaker failures not tracked",
+      "Missing resiliency metrics"
+    ],
+    "fix": [
+      "Emit retry metrics",
+      "Track transient failures",
+      "Log circuit breaker state changes"
+    ],
+    "aiReviewPrompt": [
+      "Review resiliency observability.",
+      "Ensure retries and circuit breakers are visible."
+    ],
+    "examples": {
+      "bad": "Retry policy without telemetry",
+      "good": "Retry attempts and failures logged with metrics"
+    },
+    "tags": [
+      "resiliency",
+      "retry",
+      "distributed-systems",
+      "monitoring"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "observability",
+    "aliases": []
+  },
+  {
+    "id": "OBS1003",
+    "legacyIds": [
+      "CLOUD2059",
+      "CLOUD2119"
+    ],
+    "title": "Prevent sensitive data leakage in telemetry",
+    "domain": "observability",
+    "category": "security",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Sensitive data in logs and telemetry creates security and compliance risks.",
+    "why": [
+      "Credentials and PII may leak",
+      "Violates compliance standards",
+      "Increases security exposure"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Logging tokens or passwords",
+      "PII included in telemetry",
+      "Sensitive headers logged"
+    ],
+    "fix": [
+      "Sanitize sensitive values",
+      "Mask credentials and tokens",
+      "Use structured logging filters"
+    ],
+    "aiReviewPrompt": [
+      "Review logs for sensitive data leakage.",
+      "Ensure telemetry follows compliance standards."
+    ],
+    "examples": {
+      "bad": "logger.LogInformation('Password: {Password}', password)",
+      "good": "logger.LogInformation('Authentication request received')"
+    },
+    "tags": [
+      "security",
+      "telemetry",
+      "compliance",
+      "logging"
+    ],
+    "owner": "security-team",
+    "status": "guidance",
+    "pack": "observability",
+    "aliases": []
+  },
+  {
+    "id": "ORG1001",
+    "title": "Prefer property patterns for DTO and JSON validation",
+    "domain": "readability",
+    "category": "pattern-matching",
+    "severity": "info",
+    "type": "heuristic",
+    "problem": "Traditional nested conditional checks reduce readability and increase validation complexity.",
+    "why": [
+      "Property patterns improve readability",
+      "Nested matching becomes easier to follow",
+      "Reduces validation boilerplate"
+    ],
+    "fix": [
+      "Use C# property patterns",
+      "Leverage switch expressions where appropriate"
+    ],
+    "tags": [
+      "csharp",
+      "pattern-matching",
+      "dto",
+      "json"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1003",
+    "title": "Validate options during startup",
+    "domain": "dependency-injection",
+    "category": "runtime-governance",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Invalid configuration should fail during startup instead of runtime.",
+    "fix": [
+      "Use ValidateOnStart()",
+      "Use configuration validation"
+    ],
+    "tags": [
+      "options",
+      "startup",
+      "configuration"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1005",
+    "title": "Validate ASP.NET middleware order",
+    "domain": "architecture",
+    "category": "runtime-pipeline",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "Incorrect middleware order may break authentication, authorization, routing, and telemetry.",
+    "fix": [
+      "Validate middleware ordering during startup",
+      "Ensure auth and routing are correctly configured"
+    ],
+    "tags": [
+      "aspnet",
+      "middleware",
+      "pipeline"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1006",
+    "title": "Never automatically modify appsettings files",
+    "domain": "governance",
+    "category": "configuration-management",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Automatic modification of configuration files may create unsafe or unintended configuration drift.",
+    "fix": [
+      "Provide copy-paste configuration examples only",
+      "Allow engineers to manually review config changes"
+    ],
+    "tags": [
+      "configuration",
+      "governance",
+      "safety"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1008",
+    "title": "Encourage helper methods and extension methods",
+    "domain": "maintainability",
+    "category": "reusability",
+    "severity": "info",
+    "type": "heuristic",
+    "problem": "Duplicated logic reduces maintainability and readability.",
+    "fix": [
+      "Extract reusable helpers",
+      "Create extension methods for shared logic"
+    ],
+    "tags": [
+      "helpers",
+      "extensions",
+      "reusability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1010",
+    "title": "Break code into smaller readable components",
+    "domain": "architecture",
+    "category": "maintainability",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Large classes and methods reduce readability and maintainability.",
+    "fix": [
+      "Extract focused components",
+      "Use descriptive naming",
+      "Split orchestration responsibilities"
+    ],
+    "tags": [
+      "readability",
+      "architecture",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1011",
+    "title": "Avoid god classes and god methods",
+    "domain": "architecture",
+    "category": "maintainability",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "God classes centralize too many responsibilities and create tight coupling.",
+    "fix": [
+      "Split responsibilities",
+      "Introduce cohesive services",
+      "Apply SRP"
+    ],
+    "tags": [
+      "architecture",
+      "srp",
+      "coupling"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1012",
+    "title": "Ensure methods have a single responsibility",
+    "domain": "clean-code",
+    "category": "maintainability",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Methods performing multiple actions become difficult to test and maintain.",
+    "fix": [
+      "Extract smaller focused methods",
+      "Separate orchestration from business logic"
+    ],
+    "tags": [
+      "srp",
+      "methods",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1013",
+    "title": "Prefer records over classes where applicable",
+    "domain": "architecture",
+    "category": "immutability",
+    "severity": "info",
+    "type": "heuristic",
+    "problem": "Mutable DTOs and value objects increase accidental state mutation risks.",
+    "fix": [
+      "Use records for immutable data structures",
+      "Prefer immutability by default"
+    ],
+    "tags": [
+      "records",
+      "immutability",
+      "csharp"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1014",
+    "title": "Avoid multiple nested loops",
+    "domain": "performance",
+    "category": "algorithms",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Nested loops may create significant performance bottlenecks.",
+    "fix": [
+      "Use dictionaries/lookups",
+      "Precompute indexes",
+      "Refactor algorithms"
+    ],
+    "tags": [
+      "performance",
+      "algorithms",
+      "scalability"
+    ],
+    "owner": "performance-team",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1015",
+    "title": "Add XML documentation where appropriate",
+    "domain": "maintainability",
+    "category": "documentation",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Lack of documentation reduces maintainability and onboarding efficiency.",
+    "fix": [
+      "Document public APIs",
+      "Add XML summaries for complex logic"
+    ],
+    "tags": [
+      "documentation",
+      "xml-comments"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1017",
+    "title": "Organize code into appropriate architectural boundaries",
+    "domain": "architecture",
+    "category": "project-structure",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Poor file organization reduces maintainability and discoverability.",
+    "fix": [
+      "Separate handlers, services, processors, mappers, and helpers",
+      "Align folders to architecture boundaries"
+    ],
+    "tags": [
+      "architecture",
+      "folder-structure",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1018",
+    "title": "Extract complex validation logic into dedicated components",
+    "domain": "maintainability",
+    "category": "readability",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Large inline validation logic reduces readability and reuse.",
+    "fix": [
+      "Extract validators/helpers",
+      "Use descriptive method naming"
+    ],
+    "tags": [
+      "validation",
+      "readability",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1019",
+    "title": "Use named or typed HttpClients",
+    "domain": "distributed-systems",
+    "category": "http",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Direct HttpClient usage reduces resiliency and observability.",
+    "fix": [
+      "Use IHttpClientFactory",
+      "Use named or typed clients"
+    ],
+    "tags": [
+      "httpclient",
+      "distributed-systems",
+      "resiliency"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1020",
+    "title": "Retries must implement backoff strategy",
+    "domain": "resiliency",
+    "category": "distributed-systems",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Retries without backoff can amplify outages and overload dependencies.",
+    "fix": [
+      "Use exponential backoff",
+      "Add jitter",
+      "Limit retry attempts"
+    ],
+    "tags": [
+      "retries",
+      "resiliency",
+      "distributed-systems"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  },
+  {
+    "id": "ORG1021",
+    "title": "Prefer service discovery over hardcoded endpoints",
+    "domain": "cloud-native",
+    "category": "service-discovery",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Hardcoded URLs reduce portability, failover capability, and scalability.",
+    "fix": [
+      "Use service discovery",
+      "Use centralized configuration",
+      "Use ingress/load balancers"
+    ],
+    "tags": [
+      "cloud-native",
+      "service-discovery",
+      "distributed-systems"
+    ],
+    "owner": "cloud-platform-team",
+    "status": "guidance",
+    "pack": "organization",
+    "aliases": []
+  }
+]

@@ -1,0 +1,244 @@
+[
+  {
+    "id": "DI1001",
+    "legacyIds": [
+      "CLOUD2036",
+      "CLOUD2002"
+    ],
+    "title": "Prevent misuse of dependency injection",
+    "domain": "dependency-injection",
+    "category": "architecture",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "Improper dependency injection usage creates tightly coupled and difficult-to-maintain systems.",
+    "why": [
+      "Creates hidden runtime dependencies",
+      "Makes testing more difficult",
+      "Introduces service resolution ambiguity",
+      "Can create circular dependency chains"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Injecting IServiceProvider",
+      "Service locator usage",
+      "Runtime dependency resolution"
+    ],
+    "fix": [
+      "Use constructor injection",
+      "Avoid service locator patterns",
+      "Make dependencies explicit"
+    ],
+    "aiReviewPrompt": [
+      "Review dependency boundaries.",
+      "Ensure dependencies are explicit and testable."
+    ],
+    "examples": {
+      "bad": "serviceProvider.GetService<IMyService>()",
+      "good": "Inject IMyService through constructor injection"
+    },
+    "tags": [
+      "dependency-injection",
+      "architecture",
+      "maintainability",
+      "testability"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "DI1002",
+    "legacyIds": [
+      "CLOUD2060",
+      "CLOUD2213"
+    ],
+    "title": "Avoid duplicate service registrations",
+    "domain": "dependency-injection",
+    "category": "registration",
+    "severity": "warning",
+    "type": "deterministic",
+    "problem": "Duplicate service registrations create ambiguous behavior and increase maintenance complexity.",
+    "why": [
+      "Can override intended implementations",
+      "Makes debugging difficult",
+      "Increases container complexity"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Multiple registrations for same abstraction",
+      "Repeated AddSingleton/AddScoped calls"
+    ],
+    "fix": [
+      "Centralize registrations",
+      "Use TryAdd methods where appropriate",
+      "Validate container configuration"
+    ],
+    "aiReviewPrompt": [
+      "Review registration patterns.",
+      "Ensure duplicate registrations are avoided."
+    ],
+    "examples": {
+      "bad": "services.AddSingleton<IMyService, MyService>(); twice",
+      "good": "Single centralized registration"
+    },
+    "tags": [
+      "dependency-injection",
+      "container",
+      "startup"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "DI1002"
+  },
+  {
+    "id": "DI1003",
+    "legacyIds": [
+      "CLOUD2179",
+      "CLOUD2086"
+    ],
+    "title": "Prevent circular dependencies",
+    "domain": "dependency-injection",
+    "category": "architecture",
+    "severity": "critical",
+    "type": "deterministic",
+    "problem": "Circular dependencies create unstable architectures and runtime resolution failures.",
+    "why": [
+      "Can break application startup",
+      "Creates tight coupling",
+      "Violates separation of concerns"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Mutual service references",
+      "Indirect dependency cycles",
+      "Recursive constructor graphs"
+    ],
+    "fix": [
+      "Refactor service boundaries",
+      "Introduce interfaces or mediator patterns",
+      "Split orchestration responsibilities"
+    ],
+    "aiReviewPrompt": [
+      "Review service boundaries for dependency cycles.",
+      "Ensure architecture remains loosely coupled."
+    ],
+    "examples": {
+      "bad": "ServiceA -> ServiceB -> ServiceA",
+      "good": "Mediator/event-driven decoupling"
+    },
+    "tags": [
+      "dependency-injection",
+      "architecture",
+      "coupling"
+    ],
+    "owner": "architecture-team",
+    "status": "analyzer",
+    "analyzerId": "DI1003"
+  },
+  {
+    "id": "DI1004",
+    "legacyIds": [
+      "CLOUD2116",
+      "CLOUD2199"
+    ],
+    "title": "Prevent excessive constructor dependencies",
+    "domain": "dependency-injection",
+    "category": "maintainability",
+    "severity": "info",
+    "type": "heuristic",
+    "problem": "Too many constructor dependencies often indicate orchestration leakage or god classes.",
+    "why": [
+      "Violates SRP",
+      "Increases object graph complexity",
+      "Makes testing difficult"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "More than 5 constructor parameters",
+      "Large orchestration services"
+    ],
+    "fix": [
+      "Split responsibilities",
+      "Extract orchestration layers",
+      "Reduce coupling"
+    ],
+    "aiReviewPrompt": [
+      "Review service cohesion.",
+      "Check for orchestration leakage."
+    ],
+    "examples": {
+      "bad": "Service with 10 injected dependencies",
+      "good": "Focused cohesive service"
+    },
+    "tags": [
+      "dependency-injection",
+      "architecture",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance"
+  },
+  {
+    "id": "DI1005",
+    "legacyIds": [
+      "CLOUD2103"
+    ],
+    "title": "Validate dependency injection registrations on startup",
+    "domain": "dependency-injection",
+    "category": "runtime-governance",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Invalid service registrations may only fail at runtime without startup validation.",
+    "why": [
+      "Runtime failures are difficult to diagnose",
+      "Missing registrations may remain hidden",
+      "Invalid scopes can cause memory leaks"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "No service provider validation",
+      "Missing ValidateScopes",
+      "Missing ValidateOnBuild"
+    ],
+    "fix": [
+      "Enable service provider validation",
+      "Validate scopes during startup",
+      "Fail fast on invalid registrations"
+    ],
+    "aiReviewPrompt": [
+      "Review DI startup validation.",
+      "Ensure invalid scopes are detected early."
+    ],
+    "examples": {
+      "bad": "Builder without service validation",
+      "good": "ValidateScopes and ValidateOnBuild enabled"
+    },
+    "tags": [
+      "dependency-injection",
+      "startup",
+      "runtime",
+      "governance"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  }
+]

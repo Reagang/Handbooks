@@ -1,0 +1,440 @@
+[
+  {
+    "id": "ORG1001",
+    "title": "Prefer property patterns for DTO and JSON validation",
+    "domain": "readability",
+    "category": "pattern-matching",
+    "severity": "info",
+    "type": "heuristic",
+    "problem": "Traditional nested conditional checks reduce readability and increase validation complexity.",
+    "why": [
+      "Property patterns improve readability",
+      "Nested matching becomes easier to follow",
+      "Reduces validation boilerplate"
+    ],
+    "fix": [
+      "Use C# property patterns",
+      "Leverage switch expressions where appropriate"
+    ],
+    "tags": [
+      "csharp",
+      "pattern-matching",
+      "dto",
+      "json"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1002",
+    "title": "Avoid blocking async operations",
+    "domain": "async",
+    "category": "performance",
+    "severity": "critical",
+    "type": "deterministic",
+    "problem": "Blocking async code reduces scalability and may deadlock applications.",
+    "indicators": [
+      ".Result",
+      ".Wait()",
+      "GetAwaiter().GetResult()"
+    ],
+    "fix": [
+      "Use async/await",
+      "Propagate async upward"
+    ],
+    "tags": [
+      "async",
+      "performance",
+      "scalability"
+    ],
+    "owner": "platform-engineering",
+    "status": "covered-by",
+    "coveredBy": "CC1004"
+  },
+  {
+    "id": "ORG1003",
+    "title": "Validate options during startup",
+    "domain": "dependency-injection",
+    "category": "runtime-governance",
+    "severity": "critical",
+    "type": "governance",
+    "problem": "Invalid configuration should fail during startup instead of runtime.",
+    "fix": [
+      "Use ValidateOnStart()",
+      "Use configuration validation"
+    ],
+    "tags": [
+      "options",
+      "startup",
+      "configuration"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1004",
+    "title": "Validate dependency injection scopes and registrations",
+    "domain": "dependency-injection",
+    "category": "runtime-governance",
+    "severity": "critical",
+    "type": "governance",
+    "problem": "Incorrect scopes and missing registrations create runtime instability.",
+    "fix": [
+      "Enable ValidateScopes",
+      "Enable ValidateOnBuild",
+      "Review service lifetimes"
+    ],
+    "tags": [
+      "dependency-injection",
+      "runtime",
+      "startup"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1005",
+    "title": "Validate ASP.NET middleware order",
+    "domain": "architecture",
+    "category": "runtime-pipeline",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "Incorrect middleware order may break authentication, authorization, routing, and telemetry.",
+    "fix": [
+      "Validate middleware ordering during startup",
+      "Ensure auth and routing are correctly configured"
+    ],
+    "tags": [
+      "aspnet",
+      "middleware",
+      "pipeline"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1006",
+    "title": "Never automatically modify appsettings files",
+    "domain": "governance",
+    "category": "configuration-management",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Automatic modification of configuration files may create unsafe or unintended configuration drift.",
+    "fix": [
+      "Provide copy-paste configuration examples only",
+      "Allow engineers to manually review config changes"
+    ],
+    "tags": [
+      "configuration",
+      "governance",
+      "safety"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1007",
+    "title": "Avoid magic strings and numbers",
+    "domain": "clean-code",
+    "category": "maintainability",
+    "severity": "warning",
+    "type": "deterministic",
+    "problem": "Magic values reduce readability and increase maintenance complexity.",
+    "fix": [
+      "Use constants",
+      "Use enums",
+      "Use strongly typed options"
+    ],
+    "tags": [
+      "maintainability",
+      "readability"
+    ],
+    "owner": "platform-engineering",
+    "status": "covered-by",
+    "coveredBy": "CC1003"
+  },
+  {
+    "id": "ORG1008",
+    "title": "Encourage helper methods and extension methods",
+    "domain": "maintainability",
+    "category": "reusability",
+    "severity": "info",
+    "type": "heuristic",
+    "problem": "Duplicated logic reduces maintainability and readability.",
+    "fix": [
+      "Extract reusable helpers",
+      "Create extension methods for shared logic"
+    ],
+    "tags": [
+      "helpers",
+      "extensions",
+      "reusability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1009",
+    "title": "Prefer static private methods where possible",
+    "domain": "performance",
+    "category": "memory",
+    "severity": "info",
+    "type": "deterministic",
+    "problem": "Non-static methods may capture unnecessary instance state.",
+    "fix": [
+      "Mark private methods static when no instance state is used"
+    ],
+    "tags": [
+      "performance",
+      "memory",
+      "clean-code"
+    ],
+    "owner": "platform-engineering",
+    "status": "covered-by-builtin",
+    "coveredBy": "CA1822"
+  },
+  {
+    "id": "ORG1010",
+    "title": "Break code into smaller readable components",
+    "domain": "architecture",
+    "category": "maintainability",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Large classes and methods reduce readability and maintainability.",
+    "fix": [
+      "Extract focused components",
+      "Use descriptive naming",
+      "Split orchestration responsibilities"
+    ],
+    "tags": [
+      "readability",
+      "architecture",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1011",
+    "title": "Avoid god classes and god methods",
+    "domain": "architecture",
+    "category": "maintainability",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "God classes centralize too many responsibilities and create tight coupling.",
+    "fix": [
+      "Split responsibilities",
+      "Introduce cohesive services",
+      "Apply SRP"
+    ],
+    "tags": [
+      "architecture",
+      "srp",
+      "coupling"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1012",
+    "title": "Ensure methods have a single responsibility",
+    "domain": "clean-code",
+    "category": "maintainability",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Methods performing multiple actions become difficult to test and maintain.",
+    "fix": [
+      "Extract smaller focused methods",
+      "Separate orchestration from business logic"
+    ],
+    "tags": [
+      "srp",
+      "methods",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1013",
+    "title": "Prefer records over classes where applicable",
+    "domain": "architecture",
+    "category": "immutability",
+    "severity": "info",
+    "type": "heuristic",
+    "problem": "Mutable DTOs and value objects increase accidental state mutation risks.",
+    "fix": [
+      "Use records for immutable data structures",
+      "Prefer immutability by default"
+    ],
+    "tags": [
+      "records",
+      "immutability",
+      "csharp"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1014",
+    "title": "Avoid multiple nested loops",
+    "domain": "performance",
+    "category": "algorithms",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Nested loops may create significant performance bottlenecks.",
+    "fix": [
+      "Use dictionaries/lookups",
+      "Precompute indexes",
+      "Refactor algorithms"
+    ],
+    "tags": [
+      "performance",
+      "algorithms",
+      "scalability"
+    ],
+    "owner": "performance-team",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1015",
+    "title": "Add XML documentation where appropriate",
+    "domain": "maintainability",
+    "category": "documentation",
+    "severity": "info",
+    "type": "governance",
+    "problem": "Lack of documentation reduces maintainability and onboarding efficiency.",
+    "fix": [
+      "Document public APIs",
+      "Add XML summaries for complex logic"
+    ],
+    "tags": [
+      "documentation",
+      "xml-comments"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1016",
+    "title": "Use StringBuilder for repeated concatenation",
+    "domain": "performance",
+    "category": "allocations",
+    "severity": "info",
+    "type": "deterministic",
+    "problem": "Repeated string concatenation creates unnecessary allocations.",
+    "fix": [
+      "Use StringBuilder in loops or repeated concatenation"
+    ],
+    "tags": [
+      "performance",
+      "allocations",
+      "strings"
+    ],
+    "owner": "performance-team",
+    "status": "analyzer",
+    "analyzerId": "ORG1016"
+  },
+  {
+    "id": "ORG1017",
+    "title": "Organize code into appropriate architectural boundaries",
+    "domain": "architecture",
+    "category": "project-structure",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Poor file organization reduces maintainability and discoverability.",
+    "fix": [
+      "Separate handlers, services, processors, mappers, and helpers",
+      "Align folders to architecture boundaries"
+    ],
+    "tags": [
+      "architecture",
+      "folder-structure",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1018",
+    "title": "Extract complex validation logic into dedicated components",
+    "domain": "maintainability",
+    "category": "readability",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Large inline validation logic reduces readability and reuse.",
+    "fix": [
+      "Extract validators/helpers",
+      "Use descriptive method naming"
+    ],
+    "tags": [
+      "validation",
+      "readability",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1019",
+    "title": "Use named or typed HttpClients",
+    "domain": "distributed-systems",
+    "category": "http",
+    "severity": "critical",
+    "type": "governance",
+    "problem": "Direct HttpClient usage reduces resiliency and observability.",
+    "fix": [
+      "Use IHttpClientFactory",
+      "Use named or typed clients"
+    ],
+    "tags": [
+      "httpclient",
+      "distributed-systems",
+      "resiliency"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1020",
+    "title": "Retries must implement backoff strategy",
+    "domain": "resiliency",
+    "category": "distributed-systems",
+    "severity": "critical",
+    "type": "governance",
+    "problem": "Retries without backoff can amplify outages and overload dependencies.",
+    "fix": [
+      "Use exponential backoff",
+      "Add jitter",
+      "Limit retry attempts"
+    ],
+    "tags": [
+      "retries",
+      "resiliency",
+      "distributed-systems"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "ORG1021",
+    "title": "Prefer service discovery over hardcoded endpoints",
+    "domain": "cloud-native",
+    "category": "service-discovery",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Hardcoded URLs reduce portability, failover capability, and scalability.",
+    "fix": [
+      "Use service discovery",
+      "Use centralized configuration",
+      "Use ingress/load balancers"
+    ],
+    "tags": [
+      "cloud-native",
+      "service-discovery",
+      "distributed-systems"
+    ],
+    "owner": "cloud-platform-team",
+    "status": "guidance"
+  }
+]

@@ -1,0 +1,248 @@
+[
+  {
+    "id": "OBS1001",
+    "legacyIds": [
+      "CLOUD2026",
+      "CLOUD2038"
+    ],
+    "title": "Require telemetry and structured logging",
+    "domain": "observability",
+    "category": "telemetry",
+    "severity": "critical",
+    "type": "governance",
+    "problem": "Systems without telemetry and structured logging are difficult to operate and troubleshoot.",
+    "why": [
+      "Reduces production visibility",
+      "Makes incident investigation difficult",
+      "Prevents proactive monitoring",
+      "Impacts distributed tracing"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "No structured logs",
+      "Missing telemetry events",
+      "No metrics or traces"
+    ],
+    "fix": [
+      "Use structured logging",
+      "Emit metrics and traces",
+      "Add centralized telemetry collection"
+    ],
+    "aiReviewPrompt": [
+      "Review telemetry coverage across the service.",
+      "Ensure logs are structured and correlated."
+    ],
+    "examples": {
+      "bad": "Console.WriteLine('Error occurred')",
+      "good": "logger.LogError(ex, 'Failed processing order {OrderId}', orderId)"
+    },
+    "tags": [
+      "telemetry",
+      "logging",
+      "monitoring",
+      "operations"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "OBS1002",
+    "legacyIds": [
+      "CLOUD2020",
+      "CLOUD2047"
+    ],
+    "title": "Require retry and resiliency telemetry",
+    "domain": "observability",
+    "category": "resiliency",
+    "severity": "warning",
+    "type": "governance",
+    "problem": "Retries and resiliency events without telemetry make distributed failures difficult to diagnose.",
+    "why": [
+      "Hidden retries increase latency",
+      "Circuit breaker failures become invisible",
+      "Operational troubleshooting becomes difficult"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Retry policies without logging",
+      "Circuit breaker failures not tracked",
+      "Missing resiliency metrics"
+    ],
+    "fix": [
+      "Emit retry metrics",
+      "Track transient failures",
+      "Log circuit breaker state changes"
+    ],
+    "aiReviewPrompt": [
+      "Review resiliency observability.",
+      "Ensure retries and circuit breakers are visible."
+    ],
+    "examples": {
+      "bad": "Retry policy without telemetry",
+      "good": "Retry attempts and failures logged with metrics"
+    },
+    "tags": [
+      "resiliency",
+      "retry",
+      "distributed-systems",
+      "monitoring"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "OBS1003",
+    "legacyIds": [
+      "CLOUD2059",
+      "CLOUD2119"
+    ],
+    "title": "Prevent sensitive data leakage in telemetry",
+    "domain": "observability",
+    "category": "security",
+    "severity": "critical",
+    "type": "governance",
+    "problem": "Sensitive data in logs and telemetry creates security and compliance risks.",
+    "why": [
+      "Credentials and PII may leak",
+      "Violates compliance standards",
+      "Increases security exposure"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Logging tokens or passwords",
+      "PII included in telemetry",
+      "Sensitive headers logged"
+    ],
+    "fix": [
+      "Sanitize sensitive values",
+      "Mask credentials and tokens",
+      "Use structured logging filters"
+    ],
+    "aiReviewPrompt": [
+      "Review logs for sensitive data leakage.",
+      "Ensure telemetry follows compliance standards."
+    ],
+    "examples": {
+      "bad": "logger.LogInformation('Password: {Password}', password)",
+      "good": "logger.LogInformation('Authentication request received')"
+    },
+    "tags": [
+      "security",
+      "telemetry",
+      "compliance",
+      "logging"
+    ],
+    "owner": "security-team",
+    "status": "guidance"
+  },
+  {
+    "id": "OBS1004",
+    "legacyIds": [
+      "CLOUD2071",
+      "CLOUD2068"
+    ],
+    "title": "Detect dead code paths and silent failures",
+    "domain": "observability",
+    "category": "diagnostics",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Dead code paths and silent failures reduce visibility into runtime behavior.",
+    "why": [
+      "Errors become difficult to diagnose",
+      "Unexpected behavior becomes invisible",
+      "Reduces operational confidence"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Empty catch blocks",
+      "Silent exception swallowing",
+      "Unused/unreachable code"
+    ],
+    "fix": [
+      "Log exception details",
+      "Remove dead code",
+      "Emit failure telemetry"
+    ],
+    "aiReviewPrompt": [
+      "Review for silent failure paths.",
+      "Ensure all failures are observable."
+    ],
+    "examples": {
+      "bad": "catch(Exception) { }",
+      "good": "catch(Exception ex) { logger.LogError(ex, 'Processing failed'); }"
+    },
+    "tags": [
+      "diagnostics",
+      "logging",
+      "exceptions",
+      "operations"
+    ],
+    "owner": "platform-engineering",
+    "status": "covered-by",
+    "coveredBy": "GCODE0001"
+  },
+  {
+    "id": "OBS1005",
+    "legacyIds": [
+      "CLOUD2098",
+      "CLOUD2002"
+    ],
+    "title": "Review dependency injection observability boundaries",
+    "domain": "observability",
+    "category": "dependency-injection",
+    "severity": "info",
+    "type": "heuristic",
+    "problem": "Improper dependency injection boundaries can reduce visibility into runtime behavior.",
+    "why": [
+      "Hidden runtime resolution paths",
+      "Difficult service tracing",
+      "Reduced operational transparency"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Service locator patterns",
+      "Runtime dependency resolution",
+      "Untracked transient services"
+    ],
+    "fix": [
+      "Use constructor injection",
+      "Track service lifetimes",
+      "Centralize registration patterns"
+    ],
+    "aiReviewPrompt": [
+      "Review DI boundaries for observability gaps.",
+      "Ensure service interactions are traceable."
+    ],
+    "examples": {
+      "bad": "serviceProvider.GetService<IMyService>()",
+      "good": "Inject IMyService directly"
+    },
+    "tags": [
+      "dependency-injection",
+      "observability",
+      "diagnostics"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  }
+]

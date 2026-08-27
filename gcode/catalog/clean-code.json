@@ -1,0 +1,201 @@
+[
+  {
+    "id": "CC1001",
+    "legacyIds": [
+      "CLOUD2027",
+      "CLOUD2041",
+      "CLOUD2077"
+    ],
+    "title": "Avoid inefficient LINQ",
+    "domain": "clean-code",
+    "category": "performance",
+    "severity": "error",
+    "type": "deterministic",
+    "problem": "Inefficient LINQ usage can create unnecessary allocations and reduce application performance.",
+    "why": [
+      "Can allocate unnecessary collections",
+      "Can cause multiple enumerations",
+      "May execute expensive queries repeatedly",
+      "Can degrade hot-path performance"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Multiple ToList() calls",
+      "Repeated enumeration of IEnumerable",
+      "Nested LINQ queries in loops",
+      "Unnecessary Select followed by ToList"
+    ],
+    "fix": [
+      "Cache enumerations where appropriate",
+      "Use dictionaries/lookups for repeated access",
+      "Avoid unnecessary materialization",
+      "Refactor nested LINQ in loops"
+    ],
+    "aiReviewPrompt": [
+      "Review LINQ usage for repeated enumeration.",
+      "Check for unnecessary allocations.",
+      "Review hot paths for LINQ performance issues."
+    ],
+    "examples": {
+      "bad": "orders.Where(x => x.Active).ToList().FirstOrDefault();",
+      "good": "orders.FirstOrDefault(x => x.Active);"
+    },
+    "tags": [
+      "linq",
+      "performance",
+      "allocations",
+      "maintainability"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "CC1001"
+  },
+  {
+    "id": "CC1002",
+    "legacyIds": [
+      "CLOUD2044"
+    ],
+    "title": "Prevent controller bloat",
+    "domain": "clean-code",
+    "category": "architecture",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Controllers containing orchestration and business logic become difficult to maintain and test.",
+    "why": [
+      "Violates separation of concerns",
+      "Creates tightly coupled endpoints",
+      "Reduces readability and testability"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Controller exceeds 300 lines",
+      "Controller injects more than 5 services",
+      "Contains business rules and orchestration logic"
+    ],
+    "fix": [
+      "Move orchestration into application services",
+      "Use CQRS handlers",
+      "Extract validation and mapping logic"
+    ],
+    "aiReviewPrompt": [
+      "Review controller responsibilities.",
+      "Ensure controllers remain thin orchestration boundaries."
+    ],
+    "examples": {
+      "bad": "Controller handles validation, persistence, retries, and mapping.",
+      "good": "Controller delegates work to application services or handlers."
+    },
+    "tags": [
+      "controllers",
+      "architecture",
+      "clean-architecture",
+      "maintainability"
+    ],
+    "owner": "architecture-team",
+    "status": "guidance"
+  },
+  {
+    "id": "CC1003",
+    "legacyIds": [
+      "CLOUD2087"
+    ],
+    "title": "Avoid magic constants",
+    "domain": "clean-code",
+    "category": "maintainability",
+    "severity": "error",
+    "type": "deterministic",
+    "problem": "Magic constants reduce readability and increase maintenance complexity.",
+    "why": [
+      "Intent becomes unclear",
+      "Values become duplicated",
+      "Changes become risky and error-prone"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Hardcoded numeric values",
+      "Hardcoded status strings",
+      "Repeated inline constants"
+    ],
+    "fix": [
+      "Use named constants",
+      "Use enums where appropriate",
+      "Use configuration or strongly typed options"
+    ],
+    "aiReviewPrompt": [
+      "Review for repeated hardcoded values.",
+      "Ensure business constants are centralized."
+    ],
+    "examples": {
+      "bad": "if (status == 5)",
+      "good": "if (status == OrderStatus.Completed)"
+    },
+    "tags": [
+      "constants",
+      "readability",
+      "maintainability"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "CC1003"
+  },
+  {
+    "id": "CC1004",
+    "legacyIds": [
+      "CLOUD2157"
+    ],
+    "title": "Avoid blocking async code",
+    "domain": "clean-code",
+    "category": "async",
+    "severity": "error",
+    "type": "deterministic",
+    "problem": "Blocking async code can deadlock threads and reduce application scalability.",
+    "why": [
+      "Blocks thread pool threads",
+      "Can cause deadlocks",
+      "Reduces throughput under load"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      ".Result usage",
+      ".Wait() usage",
+      "Thread.Sleep inside async flow"
+    ],
+    "fix": [
+      "Use async/await end-to-end",
+      "Propagate async upward",
+      "Use Task.Delay instead of Thread.Sleep"
+    ],
+    "aiReviewPrompt": [
+      "Review for sync-over-async violations.",
+      "Ensure async flows remain non-blocking."
+    ],
+    "examples": {
+      "bad": "var result = client.GetAsync(url).Result;",
+      "good": "var result = await client.GetAsync(url);"
+    },
+    "tags": [
+      "async",
+      "performance",
+      "reliability"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "CC1004"
+  }
+]

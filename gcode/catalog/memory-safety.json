@@ -1,0 +1,241 @@
+[
+  {
+    "id": "MEM1001",
+    "legacyIds": [
+      "CLOUD14000"
+    ],
+    "title": "Detach event handlers to prevent memory leaks",
+    "domain": "memory-safety",
+    "category": "memory-management",
+    "severity": "critical",
+    "type": "deterministic",
+    "problem": "Undetached event handlers can keep objects alive and create memory leaks.",
+    "why": [
+      "Prevents garbage collection",
+      "Creates hidden object retention",
+      "Can increase memory pressure over time"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "Event subscriptions without unsubscription",
+      "Long-lived publishers with short-lived subscribers"
+    ],
+    "fix": [
+      "Unsubscribe event handlers",
+      "Use weak event patterns where appropriate",
+      "Dispose subscriptions correctly"
+    ],
+    "aiReviewPrompt": [
+      "Review event subscription lifetimes.",
+      "Ensure handlers are detached appropriately."
+    ],
+    "examples": {
+      "bad": "publisher.Event += Handler;",
+      "good": "publisher.Event -= Handler during disposal"
+    },
+    "tags": [
+      "memory",
+      "events",
+      "gc",
+      "lifecycle"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "MEM1001"
+  },
+  {
+    "id": "MEM1002",
+    "legacyIds": [
+      "CLOUD14005"
+    ],
+    "title": "Avoid async closures without cancellation",
+    "domain": "memory-safety",
+    "category": "async",
+    "severity": "warning",
+    "type": "heuristic",
+    "problem": "Async closures without cancellation handling can retain references and create lifecycle issues.",
+    "why": [
+      "Captures object references",
+      "Can outlive intended scope",
+      "Increases memory retention risk"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Task.Delay without cancellation token",
+      "Long-running background tasks",
+      "Captured references inside async lambdas"
+    ],
+    "fix": [
+      "Use CancellationToken",
+      "Avoid unnecessary captures",
+      "Dispose long-running operations"
+    ],
+    "aiReviewPrompt": [
+      "Review async closure lifetimes.",
+      "Ensure background operations support cancellation."
+    ],
+    "examples": {
+      "bad": "await Task.Delay(TimeSpan.FromMinutes(5));",
+      "good": "await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);"
+    },
+    "tags": [
+      "async",
+      "memory",
+      "lifecycle",
+      "cancellation"
+    ],
+    "owner": "performance-team",
+    "status": "guidance"
+  },
+  {
+    "id": "MEM1003",
+    "legacyIds": [
+      "CLOUD14008"
+    ],
+    "title": "Require GC.SuppressFinalize when implementing finalizers",
+    "domain": "memory-safety",
+    "category": "resource-management",
+    "severity": "warning",
+    "type": "deterministic",
+    "problem": "Missing GC.SuppressFinalize can increase finalization overhead and delay resource cleanup.",
+    "why": [
+      "Finalizers are expensive",
+      "Objects survive longer in memory",
+      "Increases GC pressure"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": false
+    },
+    "indicators": [
+      "IDisposable implementation without GC.SuppressFinalize",
+      "Finalizer present without suppression"
+    ],
+    "fix": [
+      "Call GC.SuppressFinalize(this)",
+      "Implement IDisposable correctly",
+      "Avoid finalizers where unnecessary"
+    ],
+    "aiReviewPrompt": [
+      "Review disposal patterns.",
+      "Ensure finalizers are implemented correctly."
+    ],
+    "examples": {
+      "bad": "Dispose() without GC.SuppressFinalize(this)",
+      "good": "GC.SuppressFinalize(this);"
+    },
+    "tags": [
+      "memory",
+      "idisposable",
+      "gc",
+      "finalizers"
+    ],
+    "owner": "platform-engineering",
+    "status": "analyzer",
+    "analyzerId": "MEM1003"
+  },
+  {
+    "id": "MEM1004",
+    "legacyIds": [
+      "CLOUD14011"
+    ],
+    "title": "Avoid long-lived timers without disposal",
+    "domain": "memory-safety",
+    "category": "resource-management",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "Undisposed timers can retain references and continue executing indefinitely.",
+    "why": [
+      "Creates hidden background execution",
+      "Retains captured references",
+      "Causes memory and CPU leaks"
+    ],
+    "detection": {
+      "roslyn": true,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "Timer instances without disposal",
+      "Background timers without cancellation"
+    ],
+    "fix": [
+      "Dispose timers properly",
+      "Use hosted services with cancellation",
+      "Avoid unmanaged timer lifetimes"
+    ],
+    "aiReviewPrompt": [
+      "Review timer lifecycle management.",
+      "Ensure timers are disposed and cancellable."
+    ],
+    "examples": {
+      "bad": "new Timer(callback, null, 0, 1000);",
+      "good": "Dispose timer during shutdown"
+    },
+    "tags": [
+      "timers",
+      "memory",
+      "background-services",
+      "resource-management"
+    ],
+    "owner": "platform-engineering",
+    "status": "guidance"
+  },
+  {
+    "id": "MEM1005",
+    "legacyIds": [
+      "CLOUD14015"
+    ],
+    "title": "Avoid unbounded in-memory collections",
+    "domain": "memory-safety",
+    "category": "allocations",
+    "severity": "critical",
+    "type": "heuristic",
+    "problem": "Unbounded collections can exhaust memory under load and destabilize services.",
+    "why": [
+      "Memory usage grows indefinitely",
+      "Can trigger OOM conditions",
+      "Increases GC pressure"
+    ],
+    "detection": {
+      "roslyn": false,
+      "aiReview": true,
+      "heuristic": true
+    },
+    "indicators": [
+      "ConcurrentDictionary without eviction",
+      "Unbounded queues",
+      "Large in-memory caching without limits"
+    ],
+    "fix": [
+      "Add eviction policies",
+      "Use bounded channels/queues",
+      "Implement memory limits"
+    ],
+    "aiReviewPrompt": [
+      "Review in-memory collection growth.",
+      "Ensure memory usage remains bounded."
+    ],
+    "examples": {
+      "bad": "static List<Order> Orders = new();",
+      "good": "Use bounded cache with expiration"
+    },
+    "tags": [
+      "memory",
+      "allocations",
+      "caching",
+      "scalability"
+    ],
+    "owner": "performance-team",
+    "status": "guidance"
+  }
+]
